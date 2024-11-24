@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Страница изображений</title>
+{% endblock title %}
+
+{% block content_general %}
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% if medias %}
+            {% for media in medias %}
+            <div class="col">
+                <div class="card mt-5">
+                    <img src="{{ url_for('static', filename=media.filepath) }}" class="card-img-top" onerror="this.style.display='none';">
+                    <!--
+                    <video class="hover-video card-media-top" preload="auto" muted>
+                        <source src="{{ url_for('static', filename=media.filepath) }}" type="video/mp4">
+                    </video>
+                    -->
+                    <div class="card-body">
+                        <h5 class="card-title">{{ media.namePicture }}</h5>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <h1 class="mt-5">Нет медиа для размещения</h1>
+        {% endif %}
+    </div>
+</div>
+{% endblock content_general %}

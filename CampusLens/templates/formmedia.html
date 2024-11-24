@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Форма добовления</title>
+{% endblock title %}
+
+{% block from_image %}
+<div class="container">
+  <form action="{{ url_for('media_handler') }}" method="POST" enctype="multipart/form-data">
+    <div class="input-group mt-5">
+      <div class="position-absolute top-50 start-50 translate-middle mt-5">
+          {{ form.csrf_token }}
+          {{ form.file }}
+          {{ form.titleCard }}
+          {{ form.submit }}
+      </div>
+      <img id="image-preview" class="img-thumbnail" width="300" height="300"  alt="Предпросмотр изображения">
+    </div>
+  </form>
+</div>
+    <script defer>
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imgPreview = document.getElementById('image-preview');
+                    imgPreview.src = e.target.result; // Устанавливаем источник для изображения
+                    imgPreview.style.display = 'block'; // Показываем изображение
+                }
+
+                reader.readAsDataURL(file); // Читаем файл как URL
+            }
+        });
+    </script>
+{% endblock from_image %}

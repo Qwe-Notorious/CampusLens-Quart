@@ -1,0 +1,29 @@
+{% extends 'base2.html' %}
+
+{% block title %}
+<title>Зарегестрироваться</title>
+{% endblock title %}
+
+{% block authent %}
+<div class="container">
+    <form action="/authent_ication" method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="position-absolute top-50 start-50 translate-middle">
+            <h1 class="mb-5">Регистрация</h1>
+            <div class="input-group flex-nowrap">
+                <p>{{ form.username() }}</p>
+            </div>
+            <div class="input-group mb-3 mt-3">
+                <p>{{ form.email() }}</p>
+            </div>
+            <div class="input-group mb-3 mt-3">
+                <p>{{ form.password() }}</p>
+            </div>
+            <div class="input-group mb-3 mt-3">
+                <p>{{ form.submit() }}</p>
+            </div>
+            <small>Если вы уже зарегестрированы<br> пожалуйста передите на сраницу<br> <a href="{{ url_for('login') }}">Авторизации</a></small>
+        </div>
+    </form>
+</div>
+{% endblock authent %}
