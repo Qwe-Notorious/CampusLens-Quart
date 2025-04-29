@@ -11,6 +11,7 @@ class Media(Base):
     id = Column(Integer, primary_key=True)
     filename = Column(String(100), nullable=False)
     namePicture = Column(String(100), nullable=False)
+    tegPicture = Column(String(100), nullable=False)
     filepath = Column(String(200), nullable=False)
     timestamp = Column(DateTime, server_default=func.now())
 

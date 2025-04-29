@@ -1,0 +1,35 @@
+{% extends 'master.html' %}
+
+{% block title %}
+<title>Медия</title>
+{% endblock title %}
+
+{% block tabelMediaDB %}
+<div class="container">
+    <div class="col mt-5">
+        {% for media in medias %}
+        <div class="col mt-5">
+            <table class="tabel">
+                <tbody>
+                    <tr>
+                        <th>{{ media.id }} | </th>
+                        <td>{{ media.filename }} | </td>
+                        <td>{{ media.namePicture }} | </td>
+                        <td>{{ media.tegPicture }} | </td>
+                        <td>{{ media.filepath }} | </td>
+                        <td><input class="btn btn-primary" type="submit" value="Удалить"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <h1 class="mt-5 text-danger">Ошиюка подключения к БД</h1>
+            <div class="d-flex justify-content-center mt-5">
+              <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock tabelMediaDB %}

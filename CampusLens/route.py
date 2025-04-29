@@ -4,16 +4,16 @@ import os
 from quart import Quart, render_template, redirect, url_for, ResponseReturnValue, session
 from quart_wtf.csrf import CSRFProtect
 from quart_auth import (
-    AuthUser, current_user, login_required, login_user, logout_user, QuartAuth, Unauthorized
+    AuthUser, current_user, login_required, login_user, QuartAuth, Unauthorized
 )
 from quart_bcrypt import Bcrypt
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
 from CampusLens.models import Base, Media, User
-from CampusLens.form import UploadFile, UserRegistration, LoginAuto
+from CampusLens.form import UploadFile, UserRegistration, LoginAuto, SearchFrom
 from CampusLens.config import Config
-
+from CampusLens.admin.admin import admin_blp
 
 app = Quart(__name__, static_folder='static')
 csfr = CSRFProtect(app)
@@ -30,6 +30,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)
 SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
+app.register_blueprint(admin_blp, url_prefix='/admin')
 
 
 @app.before_serving
@@ -49,7 +50,7 @@ def random_photo_login():
     return result_tuple
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 async def index():
     async with SessionLocal() as session1:
         # Получаем все записи Media, отсортированные по timestamp
@@ -59,9 +60,12 @@ async def index():
         # Обновляем пути к файлам в одной строке
         for media in medias:
             media.filepath = media.filepath.replace("CampusLens/static/", "")
+            await session1.commit()
 
-        await session1.commit()
-
+            if not os.path.isfile(f"CampusLens/static/{media.filepath}"):
+                print("Проблема 2")
+                await session1.delete(media)
+                await session1.commit()
     if await current_user.is_authenticated:
         username = session.get('user_id')
 
@@ -93,6 +97,21 @@ async def form_media():
     return await render_template("formmedia.html", form=form)
 
 
+@app.route("/profile")
+@login_required
+async def profile():
+    if await current_user.is_authenticated:
+        username = session.get('user_id')
+        if username:
+            async with SessionLocal() as session2:
+                user_requsts = await session2.execute(select(User).where(User.username == username))
+                users = user_requsts.scalars().all()
+                user_img = random_photo_login()
+            return await render_template("profile.html", users=users, imgUser=user_img)
+
+    return await render_template("profile.html")
+
+
 @app.route("/media_handler", methods=['GET', 'POST'])
 async def media_handler():
     form = await UploadFile().create_form()
@@ -100,17 +119,17 @@ async def media_handler():
     if await form.validate_on_submit():
         file = form.file.data
         title_card = form.titleCard.data
+        tag_card = form.hashTag.data
 
         if file.filename == '':
-            print("Да блять")
-            return 'No selected file'
+            return await 'Не возможно добавить такое имя'
 
         filename = file.filename
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         await file.save(filepath)
 
         async with SessionLocal() as session1:
-            new_media = Media(filename=filename, filepath=filepath, namePicture=title_card)
+            new_media = Media(filename=filename, filepath=filepath, namePicture=title_card, tegPicture=tag_card)
             session1.add(new_media)
             await session1.commit()
 
@@ -151,13 +170,12 @@ async def login():
             if user.email == "Admin@list.ru" and bcrypt.check_password_hash(user.password,
                                                                             password) == "4509812367Admin}":
                 login_user(AuthUser(user))
-                return redirect(url_for('admin'))
+                return redirect(url_for('admin/admin'))
 
             if user is not None and bcrypt.check_password_hash(user.password, password):
                 login_user(AuthUser("user"))
                 logging.exception("Ошибка при входе: {}".format(user))
                 session["user_id"] = user.username
-                print(session)
                 return redirect(url_for('index'))
             else:
                 return redirect(url_for('login'))  # Добавлено: ведем пользователя назад к форме
@@ -170,4 +188,3 @@ async def login():
 @app.errorhandler(Unauthorized)
 async def redirect_to_login(*_: Exception) -> ResponseReturnValue:
     return redirect(url_for("login"))
-

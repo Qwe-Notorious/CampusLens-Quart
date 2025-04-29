@@ -13,9 +13,3 @@
           video.currentTime = 0; // Сбросить время воспроизведения в начало
       });
   });
-
-
-
-//                        {% if imgUser %}
-//                            <img src="{{ url_for('static', filename=) }}" class="" onerror="this.style.display='none';">`
-//                        {% endif %}

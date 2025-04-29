@@ -8,11 +8,20 @@ from wtforms import (
 from wtforms.validators import DataRequired, Email, Length
 
 
+class SearchFrom(QuartForm):
+    search_input = StringField('searchInput', validators=[DataRequired()], render_kw={"class": "form-control me-2",
+                                                                                 "placeholder": "Поиск"})
+    submit = SubmitField('Поиск', render_kw={"class": "btn btn-outline-success"})
+
 class UploadFile(QuartForm):
     file = FileField(validators=[FileRequired()], render_kw={"id": "image-upload",
                                                              "class": "btn btn-primary form-control"})
     titleCard = StringField('titleCard', validators=[DataRequired()], render_kw={"class": "form-control mt-3 mb-3",
                                                                                  "placeholder": "Название карточки"})
+
+    hashTag = StringField('HashTag', validators=[DataRequired()], render_kw={"class": "form-control mt-3 mb-3",
+                                                                                 "placeholder": "тег для поиска"})
+
     submit = SubmitField('Добавить', render_kw={"class": "btn btn-primary form-control"})
 
 

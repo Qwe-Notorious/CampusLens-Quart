@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Поисковая система</title>
+{% endblock title %}
+
+<div class="container">
+    {% for media_srh in search_outputting %}
+            <div class="col">
+                <div class="card mt-5">
+                    <img src="{{ url_for('static', filename=media.filepath) }}" class="card-img-top rounded mx-auto d-block" onerror="this.style.display='none';">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ media.namePicture }}</h5>
+                        <h6 class="card-discription">{{ media.tegPicture }}</h6>
+                    </div>
+                </div>
+            </div>
+    {% else %}
+        <h1 class="mt-5">Нет медиа для размещения</h1>
+    {% endfor %}
+</div>

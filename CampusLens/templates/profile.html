@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Профиль</title>
+{% endblock title %}
+
+{% block profile %}
+    <style>
+        .profile-avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 3px solid #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            transition: transform 0.2s;
+        }
+
+        .edit-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .profile-avatar:hover .edit-overlay {
+            opacity: 1;
+        }
+    </style>
+    <!-- Основной контент -->
+    <div class="container my-5">
+        <div class="row">
+            <!-- Левая колонка - Профиль -->
+            <button class="btn btn-light ms-auto" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                Настройки <i class="bi bi-gear"></i>
+            </button>
+            <div class="col-lg-4 mb-4">
+                <div class="card shadow hover-3d">
+                    <div class="card-body text-center">
+                        <div class="position-relative mx-auto profile-avatar" id="avatarContainer">
+                            <img src="user-photo.jpg" class="img-fluid rounded" alt="Аватар">
+                            <div class="edit-overlay rounded-bottom">
+                                Сменить фото
+                                <input type="file" class="d-none" id="avatarInput">
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <div class="gradient-input mb-3">
+                                <input type="text" class="form-control" placeholder="Имя пользователя" id="username">
+                            </div>
+                            <textarea class="form-control mb-3" rows="3" placeholder="О себе"></textarea>
+                            <button class="btn btn-primary w-100">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка - Статистика -->
+            <div class="col-lg-8">
+                <div class="card shadow hover-3d">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4"><i class="bi bi-bar-chart"></i> Статистика постов</h5>
+
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            <div class="col">
+                                <div class="stat-card p-3">
+                                    <h6>Самый популярный пост</h6>
+                                    <h2>1,234</h2>
+                                    <small class="text-muted">просмотров</small>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="stat-card p-3">
+                                    <h6>Общий охват</h6>
+                                    <h2>56,789</h2>
+                                    <small class="text-muted">просмотров</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <canvas class="mt-4" id="statsChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div class="modal fade" id="settingsModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Настройки сайта</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Тема оформления</label>
+                        <select class="form-select">
+                            <option>Светлая</option>
+                            <option>Темная</option>
+                            <option>Системная</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Уведомления</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox">
+                            <label class="form-check-label">Email-уведомления</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+            // Инициализация графика
+        new Chart(document.getElementById('statsChart'), {
+            type: 'line',
+            data: {
+                labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май'],
+                datasets: [{
+                    label: 'Просмотры',
+                    data: [65, 59, 80, 81, 56],
+                    borderColor: '#0d6efd',
+                    tension: 0.4
+                }]
+            }
+        });
+</script>
+{% endblock profile %}
+
